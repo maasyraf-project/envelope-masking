@@ -14,7 +14,7 @@ target_fs = 16e3;
 startTwoEars  % optional
 
 % load impulse response
-irFilename = 'impulse_responses/surrey_cortex_rooms/UniS_Room_A_BRIR_16k.sofa';
+irFilename = 'impulse_responses/surrey_cortex_rooms/UniS_Room_B_BRIR_16k.sofa';
 irName = split(irFilename,'/');
 
 irFilenameDir = char(strcat('\', irName(1),'\', irName(2),'\', irName(3)));
