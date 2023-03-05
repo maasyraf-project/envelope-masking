@@ -1,0 +1,63 @@
+clear all
+close all
+
+addpath(genpath('additional-packages'));
+addpath(genpath('Vocoder'));
+addpath(genpath('CI_CODING_STRAT'));
+
+% import audio
+[x, fs] = audioread("sample-speech.wav");
+x = x/max(abs(x));
+
+% import impulse response 
+startTwoEars  % optional
+
+% load impulse response
+irAnFilename = 'impulse_responses/surrey_cortex_rooms/UniS_Anechoic_BRIR_16k.sofa';
+irRevFilename = 'impulse_responses/surrey_cortex_rooms/UniS_Room_D_BRIR_16k.sofa';
+
+irAnName = split(irAnFilename,'/');
+irRevName = split(irRevFilename,'/');
+
+irAnFilenameDir = char(strcat('\', irAnName(1),'\', irAnName(2),'\', irAnName(3)));
+irAnDir = char(strcat(pwd, '\additional-packages\TwoEars\BinauralSimulator\tmp',irAnFilenameDir));
+irAnName = char(irAnName(end));
+irAnName = irAnName(1:end-5);
+
+irRevFilenameDir = char(strcat('\', irAnName(1),'\', irAnName(2),'\', irAnName(3)));
+irRevDir = char(strcat(pwd, '\additional-packages\TwoEars\BinauralSimulator\tmp',irRevFilenameDir));
+irRevName = char(irRevName(end));
+irRevName = irRevName(1:end-5);
+
+if ~exist(irAnDir, "file")
+    irAnFilename = db.downloadFile(irAnFilename);
+    irAn = SOFAload(irAnFilename);
+else
+    irAn = SOFAload(strcat(irAnName,'.sofa'));
+end
+
+if ~exist(irRevDir, "file")
+    irRevFilename = db.downloadFile(irRevFilename);
+    irRev = SOFAload(irRevFilename);
+else
+    irRev = SOFAload(strcat(irRevName,'.sofa'));
+end
+
+% make reverberant stimuli
+audioOutputAn = [conv(x, squeeze(irAn.Data.IR(37,1,:)), "full") ...
+    conv(x, squeeze(irAn.Data.IR(19,2,:)),'full')];
+
+audioOutputRev = [conv(x, squeeze(irRev.Data.IR(37,1,:)), "full") ...
+    conv(x, squeeze(irRev.Data.IR(19,2,:)),'full')];
+
+% make sub-band signal
+signalAnL = audioOutputAn(:,1);
+signalRev = audioOutputRev(:,1);
+
+signalRev = signalRev(1:length(signalAn));
+
+% make original vocoder
+vocoded_An = CI_Sim(signalAn, fs, 'Med-El');
+vocoded_Rev = CI_Sim(signalRev, fs, 'Med-El');
+
+enhanced = CI_Sim_Enh(signalRev, signalAn, fs, 'Med-El');
