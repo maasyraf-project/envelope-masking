@@ -36,7 +36,7 @@ audioInputDir = strcat(pwd,'\stimuli\clean');
 audioInputNames = dir(fullfile(audioInputDir, '*.wav'));
 
 % create directory path for enhanced spatialized reverberant stimmuli
-audioOutputDir = strcat(pwd,'\stimuli\enhanced-onset-dereverb\',irName, '\', vocoder_type, '\');
+audioOutputDir = strcat(pwd,'\stimuli\enhanced-EAS-IBM\',irName, '\', vocoder_type, '\');
 if ~exist(audioOutputDir, 'dir')
     mkdir(audioOutputDir);
 end
@@ -48,7 +48,7 @@ if ~exist(refDir, 'dir')
 end
 
 % create directory path for result
-resultsDir = strcat(pwd,'\results\enhanced-onset-dereverb\', irName, '\', vocoder_type, '\');
+resultsDir = strcat(pwd,'\results\enhanced-EAS-IBM\', irName, '\', vocoder_type, '\');
 if ~exist(resultsDir, 'dir')
     mkdir(resultsDir);
 end

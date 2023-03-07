@@ -2,12 +2,13 @@ clc
 clear all
 close all
 
-room_name = 'Room_A';
+room_name = 'Room_B';
 % vocoded stimuli
-dataRefDir = strcat(pwd, '\results\vocoded\UniS_Anechoic_BRIR_16k\');
-dataRoomDir = strcat(pwd, '\results\vocoded\UniS_',room_name,'_BRIR_16k\');
-dataOnsetDir = strcat(pwd, '\results\enhanced-onset\UniS_',room_name,'_BRIR_16k\');
-dataPropDir = strcat(pwd, '\results\enhanced-env-masking\UniS_',room_name,'_BRIR_16k\');
+dataRefDir = strcat(pwd, '\results\vocoded\UniS_Anechoic_BRIR_16k\EAS');
+dataRoomDir = strcat(pwd, '\results\vocoded\UniS_',room_name,'_BRIR_16k\EAS');
+dataOnsetDir = strcat(pwd, '\results\enhanced-EAS-IBM\UniS_',room_name,'_BRIR_16k\EAS');
+dataIRMDir = strcat(pwd, '\results\enhanced-EAS-IRM\UniS_',room_name,'_BRIR_16k\EAS');
+dataPropDir = strcat(pwd, '\results\enhanced-EAS-BIMOD-IRM\UniS_',room_name,'_BRIR_16k\EAS');
 
 outputDir = strcat(pwd, '\figures\', room_name, '\');
 
@@ -18,20 +19,21 @@ end
 dataRefFiles = dir(fullfile(dataRefDir, '**\*.mat'));
 dataRoomFiles = dir(fullfile(dataRoomDir, '**\*.mat'));
 dataBasFiles = dir(fullfile(dataOnsetDir, '**\*.mat'));
+dataBas2Files = dir(fullfile(dataIRMDir, '**\*.mat'));
 dataPropFiles = dir(fullfile(dataPropDir, '**\*.mat'));
 
-dataFiles = [dataRefFiles; dataRoomFiles; dataBasFiles; dataPropFiles];
+dataFiles = [dataRefFiles; dataRoomFiles; dataBasFiles; dataBas2Files; dataPropFiles];
 
 % header and legend
-degree = linspace(-90, 90, 37);
+degree = linspace(-90, 90, 19);
 degree = string(degree);
-for i = 1:length(degree)
-    if mod(str2num(degree(i)),10) ~= 0
-        degree(i) = " ";
-    end
-end
+% for i = 1:length(degree)
+%     if mod(str2num(degree(i)),10) ~= 0
+%         degree(i) = " ";
+%     end
+% end
 
-label = ["AN", "REV", "ON", "EM"];
+label = ["AN", "REV", "IBM", "IRM", "BM-IRM"];
 
 labelILD = [];
 labelITD = [];
@@ -51,8 +53,8 @@ for i = 1:length(dataFiles)
         stdILD_ref = stdILD;
     end
     if i ~= 1
-        meanILD_err = meanILD - meanILD_ref;
-        stdILD_err = stdILD - stdILD_ref;
+        meanILD_err = abs(meanILD - meanILD_ref);
+        stdILD_err = abs(stdILD - stdILD_ref);
     end
     
     figure(1)
@@ -64,9 +66,11 @@ for i = 1:length(dataFiles)
         plot(meanILD, '-square', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
     elseif i == 4
         plot(meanILD, '-x', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
+    elseif i == 5
+        plot(meanILD, '-^', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
     end
-    xlim([1 37])
-    xticks([1:37])
+    xlim([1 19])
+    xticks([1:19])
     xticklabels(degree)
     grid on
     hold on
@@ -91,8 +95,8 @@ for i = 1:length(dataFiles)
         stdITD_ref = stdITD;
     end
     if i ~= 1
-        meanITD_err = meanITD - meanITD_ref;
-        stdITD_err = stdITD - stdITD_ref;
+        meanITD_err = abs(meanITD - meanITD_ref);
+        stdITD_err = abs(stdITD - stdITD_ref);
     end
     
     figure(2)
@@ -104,9 +108,11 @@ for i = 1:length(dataFiles)
         plot(meanITD, '-square', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
     elseif i == 4
         plot(meanITD, '-x', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
+    elseif i == 5
+        plot(meanITD, '-^', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
     end
-    xlim([1 37])
-    xticks([1:37])
+    xlim([1 19])
+    xticks([1:19])
     xticklabels(degree)
     grid on
     hold on
@@ -122,6 +128,9 @@ for i = 1:length(dataFiles)
     set(h, 'Location', 'best')
 
     % plot SII value
+    if i == 1
+        sii(:,:) = 1;
+    end
     meanSII = mean(sii(:,:));
     stdSII = std(sii(:,:));
     
@@ -134,9 +143,11 @@ for i = 1:length(dataFiles)
         plot(meanSII, '-square', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
     elseif i == 4
         plot(meanSII, '-x', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
+    elseif i == 5
+        plot(meanSII, '-^', 'MarkerSize', 4, 'Color', [0 0 0] + 0.05 * i, LineWidth=0.5)
     end
-    xlim([1 37])
-    xticks([1:37])
+    xlim([1 19])
+    xticks([1:19])
     xticklabels(degree)
     grid on
     hold on

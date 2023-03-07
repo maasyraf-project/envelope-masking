@@ -7,14 +7,14 @@ addpath(genpath('additional-packages'));
 addpath(genpath('my-vocoder'));
 
 % call vocoder function
-vocoder_type = 'Med-El';
+vocoder_type = 'EAS';
 
 target_fs = 16e3;
 
 startTwoEars  % optional
 
 % load impulse response
-irFilename = 'impulse_responses/surrey_cortex_rooms/UniS_Room_B_BRIR_16k.sofa';
+irFilename = 'impulse_responses/surrey_cortex_rooms/UniS_Room_D_BRIR_16k.sofa';
 irName = split(irFilename,'/');
 
 irFilenameDir = char(strcat('\', irName(1),'\', irName(2),'\', irName(3)));
@@ -38,19 +38,19 @@ audioInputNames = dir(fullfile(audioInputDir, '*.wav'));
 audioANDir = strcat(pwd,'\stimuli\unvocoded\UniS_Anechoic_BRIR_16k');
 
 % create directory path for spatialized reverberant stimmuli
-audioOutputDir = strcat(pwd,'\stimuli\enhanced-env-masking\',irName, '\', vocoder_type, '\');
+audioOutputDir = strcat(pwd,'\stimuli\enhanced-EAS-IBM\',irName, '\', vocoder_type, '\');
 if ~exist(audioOutputDir, 'dir')
     mkdir(audioOutputDir);
 end
 
 % directory path for reference stimuli
-refDir = strcat(pwd,'\stimuli\vocoded\UniS_Anechoic_BRIR_16k\Med-El\');
+refDir = strcat(pwd,'\stimuli\vocoded\UniS_Anechoic_BRIR_16k\EAS\');
 if ~exist(refDir, 'dir')
     error('Reference directory is not exist!');
 end
 
 % create directory path for result
-resultsDir = strcat(pwd,'\results\enhanced-env-masking\', irName, '\', vocoder_type, '\');
+resultsDir = strcat(pwd,'\results\enhanced-EAS-IBM\', irName, '\', vocoder_type, '\');
 if ~exist(resultsDir, 'dir')
     mkdir(resultsDir);
 end
@@ -81,7 +81,7 @@ for i = 1:length(audioInputNames)
     ildDegree = [];
     siiDegree = [];
     
-    for j = 1:size(ir.Data.IR,1)
+    for j = 1:2:size(ir.Data.IR,1)
         % make output audio filenames
         if j < 19
             OutputFilenames = strcat(audioInputNames(i).name(1:end-4),'_', 'min', string(abs(-(ir.SourceView(j,1) - 180))),'.wav');

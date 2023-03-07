@@ -24,7 +24,7 @@ irAnDir = char(strcat(pwd, '\additional-packages\TwoEars\BinauralSimulator\tmp',
 irAnName = char(irAnName(end));
 irAnName = irAnName(1:end-5);
 
-irRevFilenameDir = char(strcat('\', irAnName(1),'\', irAnName(2),'\', irAnName(3)));
+irRevFilenameDir = char(strcat('\', irRevName(1),'\', irRevName(2),'\', irRevName(3)));
 irRevDir = char(strcat(pwd, '\additional-packages\TwoEars\BinauralSimulator\tmp',irRevFilenameDir));
 irRevName = char(irRevName(end));
 irRevName = irRevName(1:end-5);
@@ -52,27 +52,15 @@ audioOutputRev = [conv(x, squeeze(irRev.Data.IR(37,1,:))) ...
 
 audioOutputRev = audioOutputRev(1:length(audioOutputAn),:);
 
-% make sub-band signal
-signalAnLeft = audioOutputAn(:,1);
-signalAnRight = audioOutputAn(:,2);
-
-signalRev = audioOutputRev(:,1);
-
-signalRev = signalRev(1:length(signalAnLeft));
-
 % make original vocoder
-% vocoded_An_Left = CI_Sim(signalAnLeft, fs, 'Med-El');
-% vocoded_An_Right = CI_Sim(signalAnRight, fs, 'Med-El');
+vocodedAn = [CI_Sim_Left(audioOutputAn(:,1), fs, 'EAS') ...
+                CI_Sim_Right(audioOutputAn(:,2), fs, 'EAS')];
 
-% vocodedAn = [CI_Sim_Left(audioOutputAn(:,1), fs, 'Med-El') ...
-%                 CI_Sim_Right(audioOutputAn(:,2), fs, 'Med-El')];
+vocodedRev = [CI_Sim_Left(audioOutputRev(:,1), fs, 'EAS') ...
+                CI_Sim_Right(audioOutputRev(:,2), fs, 'EAS')];
 
-vocodedRev = [CI_Sim_Left(audioOutputRev(:,1), fs, 'Med-El') ...
-                CI_Sim_Right(audioOutputRev(:,2), fs, 'Med-El')];
-
-enhanced = [CI_Sim_Enh_Left(audioOutputRev(:,1), audioOutputAn(:,1), fs, 'Med-El') ...
-                CI_Sim_Enh_Right(audioOutputRev(:,2), audioOutputAn(:,2), fs, 'Med-El')];
-
+enhanced = [CI_Sim_Enh_Left(audioOutputRev(:,1), audioOutputAn(:,1), fs, 'EAS') ...
+                CI_Sim_Enh_Right(audioOutputRev(:,2), audioOutputAn(:,2), fs, 'EAS')];
 
 itdValueRev = estimate_ITD_Broadband(vocodedRev, fs)*1000;             % in ms
 ildValueRev = 20*log10(rms(vocodedRev(:,1))/rms(vocodedRev(:,2)));                        % in dB
@@ -80,4 +68,5 @@ ildValueRev = 20*log10(rms(vocodedRev(:,1))/rms(vocodedRev(:,2)));              
 itdValueEnh = estimate_ITD_Broadband(enhanced, fs)*1000;             % in ms
 ildValueEnh = 20*log10(rms(enhanced(:,1))/rms(enhanced(:,2)));                        % in dB
 
-mbstoi(vocodedAn(:,1),vocodedAn(:,2), vocodedRev(:,1), vocodedRev(:,2), fs);
+siiRev = mbstoi(vocodedAn(:,1),vocodedAn(:,2), vocodedRev(:,1), vocodedRev(:,2), fs);
+siiEnh = mbstoi(vocodedAn(:,1),vocodedAn(:,2), enhanced(:,1), enhanced(:,2), fs);
